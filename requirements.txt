@@ -2,3 +2,4 @@ dash
 pandas
 chardet
 dash-table
+plotly

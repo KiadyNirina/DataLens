@@ -6,9 +6,24 @@ def create_layout():
         
         dcc.Upload(
             id='upload-data',
-            children=html.Button('Uploader your file', className='button'),
-            multiple=False  # Limiter à un seul fichier
+            children=html.Button('Uploader votre fichier', className='button'),
+            multiple=False
         ),
+
+        html.Div([
+            html.Label("Type de graphique :"),
+            dcc.Dropdown(
+                id='graph-type-dropdown',
+                options=[
+                    {'label': 'Lignes', 'value': 'line'},
+                    {'label': 'Barres', 'value': 'bar'},
+                    {'label': 'Camembert', 'value': 'pie'},
+                    {'label': 'Nuage de points', 'value': 'scatter'}
+                ],
+                value='line',
+                clearable=False
+            )
+        ], style={'margin': '20px 0'}),
 
         html.Div(id='output-data-upload'),
     ])
