@@ -3,7 +3,7 @@ import plotly.express as px
 def create_figure(df, filename, graph_type='line'):
     try:
         if graph_type == 'line':
-            fig = px.line(df, x=df.columns[0], y=df.columns[1:], title=f"Données de {filename}")
+            fig = px.line(df, x=df.columns[0], y=df.columns[1:], title=f"Données de {filename}", markers=True)
         elif graph_type == 'bar':
             fig = px.bar(df, x=df.columns[0], y=df.columns[1:], barmode='group', title=f"Données de {filename}")
         elif graph_type == 'pie':
@@ -13,7 +13,7 @@ def create_figure(df, filename, graph_type='line'):
         elif graph_type == 'scatter':
             fig = px.scatter(df, x=df.columns[0], y=df.columns[1], title=f"Données de {filename}")
         else:
-            fig = px.line(df, x=df.columns[0], y=df.columns[1:])
+            fig = px.line(df, x=df.columns[0], y=df.columns[1:], markers=True)
 
         fig.update_layout(
             xaxis_title=df.columns[0],
