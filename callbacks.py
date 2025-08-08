@@ -1,5 +1,4 @@
-from dash import Output, Input, State, html, dcc
-import dash_table
+from dash import Output, Input, State, html, dcc, dash_table
 import pandas as pd
 import base64
 import io

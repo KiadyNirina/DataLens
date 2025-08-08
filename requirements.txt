@@ -1,3 +1,4 @@
 dash
 pandas
 chardet
+dash-table

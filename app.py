@@ -9,4 +9,4 @@ app.layout = create_layout()  # fonction pour créer la mise en page
 register_callbacks(app)  # Enregistrement des callbacks
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=False)
