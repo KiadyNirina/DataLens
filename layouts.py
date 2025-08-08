@@ -2,7 +2,7 @@ from dash import dcc, html
 
 def create_layout():
     return html.Div(children=[
-        html.H1(children='Upload a JSON or CSV file'),
+        html.H1('Upload a JSON or CSV file'),
         
         dcc.Upload(
             id='upload-data',
@@ -24,6 +24,9 @@ def create_layout():
                 clearable=False
             )
         ], style={'margin': '20px 0'}),
+
+        dcc.Store(id='stored-data', storage_type='local'),
+        dcc.Store(id='stored-filename', storage_type='local'),
 
         html.Div(id='output-data-upload'),
     ])
