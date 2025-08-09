@@ -1,19 +1,26 @@
-def create_figure(df, filename):
-    """Crée un graphique à partir du DataFrame."""
-    figure = {'data': []}
+import plotly.express as px
 
-    for column in df.columns[1:]:  # Ignore la première colonne pour les axes x
-        figure['data'].append({
-            'x': df[df.columns[0]],  # Utilise la première colonne comme x
-            'y': df[column],
-            'type': 'line',  # Type de graphique (line, bar, etc.)
-            'name': column
-        })
+def create_figure(df, filename, graph_type='line'):
+    try:
+        if graph_type == 'line':
+            fig = px.line(df, x=df.columns[0], y=df.columns[1:], title=f"Données de {filename}", markers=True)
+        elif graph_type == 'bar':
+            fig = px.bar(df, x=df.columns[0], y=df.columns[1:], barmode='group', title=f"Données de {filename}")
+        elif graph_type == 'pie':
+            if len(df.columns) != 2:
+                raise ValueError("Le camembert nécessite 1 colonne de valeurs et 1 colonne de labels.")
+            fig = px.pie(df, names=df.columns[0], values=df.columns[1], title=f"Données de {filename}")
+        elif graph_type == 'scatter':
+            fig = px.scatter(df, x=df.columns[0], y=df.columns[1], title=f"Données de {filename}")
+        else:
+            fig = px.line(df, x=df.columns[0], y=df.columns[1:], markers=True)
 
-    figure['layout'] = {
-        'title': f'Données de {filename}',
-        'xaxis': {'title': df.columns[0]},  # Titre de l'axe x
-        'yaxis': {'title': 'Valeur'},  # Titre de l'axe y
-    }
+        fig.update_layout(
+            xaxis_title=df.columns[0],
+            yaxis_title="Valeur",
+            hovermode='closest'
+        )
+        return fig
 
-    return figure
+    except Exception as e:
+        return px.scatter(title=f"Erreur : {str(e)}")

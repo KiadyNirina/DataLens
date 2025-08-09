@@ -1,61 +1,58 @@
-from dash import Output, Input, State, html, dcc, dash_table
+from dash import Output, Input, State, html, dcc, callback, dash_table
 import pandas as pd
-import base64
-import io
 from parsers import parse_contents
 from figures import create_figure
 
 def register_callbacks(app):
     @app.callback(
-        Output('output-data-upload', 'children'),
+        [Output('stored-data', 'data'),
+         Output('stored-filename', 'data')],
         Input('upload-data', 'contents'),
         State('upload-data', 'filename'),
         prevent_initial_call=True
     )
-    def update_output(contents, filename):
-        """Mettre à jour la sortie en fonction du contenu téléchargé."""
+    def store_data(contents, filename):
         if contents is not None:
             df, error = parse_contents(contents)
+            if not error:
+                return df.to_dict('records'), filename
+        return None, None
 
-            if error:
-                return html.Div([html.H5(error, className="error")])
+    @app.callback(
+        Output('output-data-upload', 'children'),
+        Input('stored-data', 'data'),
+        Input('graph-type-dropdown', 'value'),
+        Input('stored-filename', 'data')
+    )
+    def update_output(data, graph_type, filename):
+        if data is None:
+            return html.Div("Aucune donnée chargée. Uploader un fichier CSV/JSON.")
 
-            figure = create_figure(df, filename)
+        df = pd.DataFrame(data)
+        
+        title = f"Données de {filename}" if filename else "Données uploadées"
 
-            data_table = dash_table.DataTable(
-                data=df.to_dict('records'),
-                columns=[{'name': col, 'id': col} for col in df.columns],
-                page_size=10,
-                filter_action='native',
-                sort_action='native',
-                style_table={
-                    'overflowX': 'auto',
-                },
-                style_cell={
-                    'textAlign': 'left',
-                    'padding': '10px',
-                    'backgroundColor': 'white',
-                    'color': 'black',
-                },
-                style_header={
-                    'backgroundColor': 'lightblue',
-                    'fontWeight': 'bold',
-                    'border': '1px solid black',
-                },
-                style_data_conditional=[
-                    {
-                        'if': {'row_index': 'odd'},
-                        'backgroundColor': 'lightgrey',
-                    },
-                    {
-                        'if': {'row_index': 'even'},
-                        'backgroundColor': 'white',
-                    },
-                ],
-            )
+        figure = create_figure(df, title, graph_type)
+        data_table = dash_table.DataTable(
+            data=df.to_dict('records'),
+            columns=[{'name': col, 'id': col} for col in df.columns],
+            page_size=10,
+            filter_action='native',
+            sort_action='native',
+            style_table={'overflowX': 'auto'},
+            style_cell={'textAlign': 'left', 'padding': '10px'},
+            style_header={'backgroundColor': 'lightblue', 'fontWeight': 'bold'}
+        )
 
-            return html.Div([
-                html.H5(filename),
-                dcc.Graph(figure=figure),  # Affiche le graphique
-                html.Div(children=data_table)
-            ])
+        return html.Div([
+            html.H5(title),
+            dcc.Graph(figure=figure),
+            html.Div(children=data_table)
+        ])
+
+    @app.callback(
+        Output('graph-type-dropdown', 'value'),
+        Input('stored-data', 'data')
+    )
+    def init_graph_type(data):
+        return 'line'
