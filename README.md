@@ -293,9 +293,7 @@ Full-Stack Developer & SaaS Builder
 
 ## 📄 License
 
-This project does not currently specify a license.
-
-If you intend to make DataLens open source, consider adding an appropriate `LICENSE` file to the repository.
+This project is licensed under the [MIT License](LICENSE).
 
 ## ⭐ Support
 
